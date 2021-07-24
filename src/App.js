@@ -7,6 +7,9 @@ import moment from 'moment';
 // import jquery from 'jquery';
 // import $ from 'jquery';
 
+var showLists = document.getElementsByClassName('showList');
+var showSpans = document.getElementsByClassName('showSpan');
+
 function App() {
 
   let [comment_array, comment_array_change] = useState([
@@ -39,11 +42,7 @@ function App() {
     {id : 0, title : "first posting", content : "1. 이것은 첫번째 포스팅 내용입니다.", date : "Jan 16, 2021", update_date : "", thumb : 0}
   ]);
 
-  let [postshow_page, postshow_page_change] = useState(0);
-
-  let [listshow_num, listshow_num_change] = useState(3);
-  let [liststart_page, liststart_page_change] = useState(0);
-  let [listshow, listshow_change] = useState(post.slice(0, 3));
+  let [current_page, current_page_change] = useState(0);
 
   let [islistshort, islistshort_change] = useState(true);
   let [listbutton_name, listbutton_name_change] = useState('More')
@@ -59,10 +58,7 @@ function App() {
   let comment_form = {visitor : "", date : "", comment : ""};
   let history = useHistory();
   let today = moment().format("MMM DD, YYYY");
-
   
-  let [listcolor, listcolor_change] = useState({color : "black"});
-
   return (
     <div className="App">
       <Navbar expand="lg" id="navbar">
@@ -82,68 +78,65 @@ function App() {
         <Row>
             <Col className="list" xl={3} lg={4}>
 
+              <div id="userPage">
+                <h4>이미지</h4>
+                <h4>Nickname, 짧은 자기소개<span>⚙️</span></h4>
+                <h5>owner or guest 로 입장</h5>
+                
+              </div>
 
-              <h4>😎 List <span>({today}) </span> 
-                <Button variant="outline-warning" onClick={()=>{
 
-
-
-                    if (islistshort == true){
-                      liststart_page_change(0);
-                      listshow_change(post);
-                      listshow_num_change(post.length);
-                      listbutton_name_change('Less')
-                      islistshort_change(!islistshort);
-                      // console.log(document.getElementsByClassName('select').length);
-                      // document.getElementsByClassName('select')[2].style.color = '#ffc107';
-                      // document.getElementsByClassName('selectspan')[postshow_page].style.color = 'black';
-                    } else {
-                      listshow_num_change(3);
-                      liststart_page_change(postshow_page);
-                      listshow_change(post.slice(postshow_page, postshow_page + 3));
-                      listbutton_name_change('More')
-                      islistshort_change(!islistshort);
-                      // console.log(document.getElementsByClassName('select').length);
-                    }
-                  }}>{listbutton_name}</Button>
-              </h4>
+              <h4>😎 List <span>({today}) </span></h4>
+                <div className="showList">
+                    <h5><span className="showSpan">▶ </span>(No previous page)</h5>
+                    <p>Please create a new posting.</p>
+                </div>
                 {
-                  listshow.map(function(a){
+                  post.map(function(a){
                     return(
-                      <div onClick={()=>{ 
-
+                      <div className="showList" onClick={()=>{ 
                         var showNum = post.indexOf(a);
-
-
-                        postshow_page_change(showNum); 
-
-                        if (islistshort == true){
-                          liststart_page_change(showNum);
-                          listshow_num_change(3);
-                          listshow_change(post.slice(showNum, showNum + listshow_num));
-                         
-                        } else {
-                          liststart_page_change(0);
-                          listshow_num_change(post.length);
-                          listshow_change(post);
-                          List_change_color(post={post}, showNum);
-                        }
-                        comment_open_change(false); 
-                        comment_input_open_change(false); 
+                        current_page_change(showNum); 
+                        reset_List(islistshort={islistshort}, showNum);
                       }}>
-                       
-                        <h5 className="select"><span className="selectspan">▶ </span>{a.title}</h5>
+                        <h5><span className="showSpan">▶ </span>{a.title}</h5>
                         <p>{a.date} {a.update_date}</p> 
-
-
                       </div>
                     )
                   })
-                  
-                  
-                
                 }
-               
+                <div className="showList">
+                  <h5><span className="showSpan">▶ </span>(No next page)</h5>
+                  <p>Thank you!</p>
+                </div>
+
+
+                <p id="moreButton">
+                  <Button variant="outline-warning" onClick={()=>{
+                    for(var i=0; i<showLists.length; i++){
+                      showLists[i].style.maxHeight = 'none';
+                    }   
+
+                    islistshort_change(!islistshort);
+
+                    if (islistshort === true) {
+                      listbutton_name_change('Less')
+                      for(var i=0; i<showLists.length; i++){
+                        showLists[i].style.maxHeight = 'none';
+                      }
+                    } else {
+                      listbutton_name_change('More')
+                      for(var i=0; i<showLists.length; i++){
+                        showLists[i].style.maxHeight = 0;
+                        if (i === current_page || i === current_page+1 || i === current_page+2) {
+                          showLists[i].style.maxHeight = 'none'; 
+                        }
+                      }
+                    }
+
+                    }}>{listbutton_name}</Button>
+                  </p>
+                  <hr/>
             </Col>
  
           <Route exact path="/">  
@@ -152,35 +145,32 @@ function App() {
                 post.length === 0
                 ? <h4>"No Postings!"</h4>
                 : <div>
-                    <h4>{post[postshow_page].title}</h4><br/>
-                    <h6>{post[postshow_page].date} {post[postshow_page].update_date}</h6>
+                    <h4>{post[current_page].title}</h4><br/>
+                    <h6>{post[current_page].date} {post[current_page].update_date}</h6>
                     <h6>
                       <Button variant="outline-primary" as={Link} to="/Update">Update</Button>
                       <Button variant="outline-danger" onClick={()=>{
                         if (window.confirm('Are you sure you want to delete this post?')){
                           var Copy_post = [...post];
-                          Copy_post.splice(postshow_page, 1);
+                          Copy_post.splice(current_page, 1);
                           post_change(Copy_post);
-                          listshow_change(Copy_post.slice(0,  0 + listshow_num));
-                          postshow_page_change(0);
                           var Copy_comment = [...comment_array];
-                          Copy_comment.splice(postshow_page, 1);
+                          Copy_comment.splice(current_page, 1);
                           comment_array_change(Copy_comment);
-                          List_change_color(post={post}, 0);
                         } 
                       }}>Delete</Button>
                     </h6>
                     <br/><br/>
-                    <p>{post[postshow_page].content}</p>
+                    <p>{post[current_page].content}</p>
                     {/* <hr/> */}
                     <button onClick={()=>{
                       var Copy_post = [...post];
-                      Copy_post[postshow_page].thumb++;
+                      Copy_post[current_page].thumb++;
                       post_change(Copy_post);
-                      }}>👍 {post[postshow_page].thumb}</button>
+                      }}>👍 {post[current_page].thumb}</button>
                       <hr/>
                     <p>
-                      <Button onClick={()=>{ comment_open_change(!comment_open)}} variant="secondary">Comment : {comment_array[postshow_page].length}</Button>
+                      <Button onClick={()=>{ comment_open_change(!comment_open)}} variant="secondary">💬 : {comment_array[current_page].length}</Button>
                       <Button onClick={()=>{ comment_input_open_change(!comment_input_open)}} variant="secondary">+</Button>
                     </p>
                     {
@@ -205,7 +195,7 @@ function App() {
                             if (comment_visitor === "" || comment_content === ""){
                               alert('Please fill all two fields!');    
                             } else {
-                              Copy_comment[postshow_page].unshift(comment_form); 
+                              Copy_comment[current_page].unshift(comment_form); 
                               comment_array_change(Copy_comment);
                               comment_visitor_change("");
                               comment_content_change("");
@@ -223,7 +213,7 @@ function App() {
                       ? <div>
                           <hr/>
                           {
-                            comment_array[postshow_page].map(function(c, i){
+                            comment_array[current_page].map(function(c, i){
                               return(
                                 <div className="comment" key={i}>
                                   <h6>{c.comment}</h6>
@@ -238,21 +228,22 @@ function App() {
                     } 
                     <br/>
                     <div><Button variant="outline-warning" onClick={()=>{
-                      if(postshow_page > 0) {
-                        postshow_page_change(postshow_page - 1);
-                        if (islistshort == true) listshow_change(post.slice(postshow_page - 1, postshow_page - 1 + listshow_num));
-                        else listshow_change(post);
+                      if(current_page > 0) {
+                        current_page_change(current_page - 1);
+                        reset_List(islistshort={islistshort}, current_page - 1);
                       } else alert("This is the first posting.");
                     }}>◀ Prev</Button> &nbsp; &nbsp; <Button variant="outline-warning" onClick={()=>{
-                      if(postshow_page < (post.length - 1)){ 
-                        postshow_page_change(postshow_page + 1);
-                        if (islistshort == true) listshow_change(post.slice(postshow_page + 1, postshow_page + 1 + listshow_num));
-                        else listshow_change(post);
+                      if(current_page < (post.length - 1)){ 
+                        current_page_change(current_page + 1);
+                        reset_List(islistshort={islistshort}, current_page + 1);
                       } else alert("This is the last posting.");
                     }}>Next ▶</Button> </div>
                   </div>
+                  
               }
+              <hr/>
             </Col>
+            
           </Route>
 
           <Route path="/input">
@@ -284,11 +275,11 @@ function App() {
                     
                     Copy_comment.unshift([]);
                     comment_array_change(Copy_comment);
-
-                    postshow_page_change(0);
+                    current_page_change(0);
                     input_title_change("");
                     input_content_change("");
                     history.push('/');
+                    reset_List(islistshort={islistshort}, 0);
                   }
                 } }>Submit</Button>
                 <Button variant="outline-danger" as={Link} to="/">Cancel</Button>
@@ -302,47 +293,32 @@ function App() {
               <Form>
                 <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
                   <Form.Label>Title</Form.Label>
-                  <Form.Control key={post[postshow_page].title} defaultValue={post[postshow_page].title} onChange={ (e)=>{ input_title_change(e.target.value) } }/>
+                  <Form.Control key={post[current_page].title} defaultValue={post[current_page].title} onChange={ (e)=>{ input_title_change(e.target.value) } }/>
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
                   <Form.Label>Content</Form.Label>
-                  <Form.Control as="textarea" rows={5} key={post[postshow_page].content} defaultValue={post[postshow_page].content} onChange={ (e)=>{ input_content_change(e.target.value) } }/>
+                  <Form.Control as="textarea" rows={5} key={post[current_page].content} defaultValue={post[current_page].content} onChange={ (e)=>{ input_content_change(e.target.value) } }/>
                 </Form.Group>
-                {/* {input_title == ""
-                ? <p>true</p>
-                : <p>false</p>
-                } */}
                 <Button variant="outline-primary" onClick={ ()=>{
-                  
                   if (input_title === ""){
-                    input_form.title = post[postshow_page].title;
+                    input_form.title = post[current_page].title;
                   } else input_form.title = input_title;
                   
                   if (input_content === ""){
-                    input_form.content = post[postshow_page].content;
+                    input_form.content = post[current_page].content;
                   } else input_form.content = input_content;
-
-                  input_form.id = post[postshow_page].id;
-
-                  input_form.date = post[postshow_page].date;
-
+                  input_form.id = post[current_page].id;
+                  input_form.date = post[current_page].date;
                   input_form.update_date = "(Update : "+today+" )";
-
-                  input_form.thumb = post[postshow_page].thumb;
-
-                  // input_form.comment_num = post[postshow_page].comment_num;
-
-                  // input_form.comment = post[postshow_page].comment;
+                  input_form.thumb = post[current_page].thumb;
 
                   var Copy_post = [...post];
-                  // var Copy_listshow = [...listshow];
                   
                   if (input_title === "" && input_content === ""){
                     alert('Nothing has been changed!');    
                   } else {
-                    Copy_post[postshow_page] = input_form;
+                    Copy_post[current_page] = input_form;
                     post_change(Copy_post); 
-                    listshow_change(Copy_post.slice(liststart_page, liststart_page + listshow_num));
                     input_title_change("");
                     input_content_change("");
                     history.push('/');
@@ -352,22 +328,11 @@ function App() {
               </Form>
             </Col>
           </Route>
-
-
-
-
-
-
-
-
-
-
-
           <Col className="extra" xl={2}>기타</Col>
         </Row>
         <hr/>
         <div>감사합니다. 이부분은 장식을 위해서 써보자구</div>
-        {/* <List_page postshow_page={postshow_page}></List_page> */}
+        {/* <List_page current_page={current_page}></List_page> */}
 
       </Container>
     </div>
@@ -384,27 +349,45 @@ function App() {
     
 // }
 
-function List_page(props){
-  var start = (Math.ceil((props.postshow_page+1)/5)-1)*5 +1;
-  let page_array = [];
-  for (var i = 0; i < 5 ; i++){
-    page_array.push(start+i);
-  }
-    return(
-      <div>{page_array}</div>
-    )
-}
+// function List_page(props){
+//   var start = (Math.ceil((props.current_page+1)/5)-1)*5 +1;
+//   let page_array = [];
+//   for (var i = 0; i < 5 ; i++){
+//     page_array.push(start+i);
+//   }
+//     return(
+//       <div>{page_array}</div>
+//     )
+// }
 
-function List_change_color(props, num){
-  for (var index = 0; index < props.post.length; index++){
-    if (index == num) {
-      document.getElementsByClassName('select')[index].style.color = '#ffc107';
-      document.getElementsByClassName('selectspan')[index].style.color = 'black';
-    }
-    else {
-      document.getElementsByClassName('select')[index].style.color = 'black';
-      document.getElementsByClassName('selectspan')[index].style.color = 'transparent';
-    }
+// function List_change_color(props, num){
+//   for (var index = 0; index < props.post.length; index++){
+//     if (index == num) {
+//       document.getElementsByClassName('select')[index].style.color = '#ffc107';
+//       document.getElementsByClassName('selectspan')[index].style.color = 'black';
+//     }
+//     else {
+//       document.getElementsByClassName('select')[index].style.color = 'black';
+//       document.getElementsByClassName('selectspan')[index].style.color = 'transparent';
+//     }
+//   }
+// }
+
+function reset_List(props, showNum){
+
+  for(var i=0; i<showLists.length; i++){
+    showLists[i].style.color = 'darkgray';
+    showSpans[i].style.color = 'white';
+    showLists[i].style.maxHeight = 'none';
+
+    if (props.islistshort == true){
+      if (i === showNum || i === showNum+1 || i === showNum+2) {
+        showLists[i].style.maxHeight = 'none';
+      }
+      else showLists[i].style.maxHeight = 0;
+    } 
+    showSpans[showNum+1].style.color = 'black';
+    showLists[showNum+1].style.color = 'black';
   }
 }
 

@@ -69,7 +69,7 @@ function App() {
         <Container>
           <Navbar.Brand id="blogtitle" >
             <button onClick={()=>{
-              window.location.href="http://kimportfollio.dothome.co.kr/blog_react";
+              window.location.href="http://kimportfollio.dothome.co.kr/blog";
             }}><img src="./img/logo192.png"/> React Blog
             </button>
           </Navbar.Brand>

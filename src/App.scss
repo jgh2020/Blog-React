@@ -404,7 +404,7 @@ button{
 
   #postList{
     padding:6px;
-    margin: -350px 5px 20px 5px;
+    margin: -360px 5px 20px 5px;
     border: 2px solid black;
     border-radius: 5px;
     transition: all 0.8s;
@@ -413,8 +413,8 @@ button{
   }
 
   #postList.listOpen{
-    margin: -5px 5px 20px 5px;
-    max-height: 85vh;
+    margin: -8px 5px 20px 5px;
+    max-height: 80vh;
     overflow-y:auto;  
   }
 

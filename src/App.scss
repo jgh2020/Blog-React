@@ -235,7 +235,11 @@ button{
 }
 
 #moreButton{
-  position:sticky;
+  position: sticky;
+  position: -webkit-sticky;
+  position: -moz-sticky;
+  position: -o-sticky;
+  position: -ms-sticky;
   top:5px;
   margin-right: 3px;
   margin-top: -8px;

@@ -55,7 +55,7 @@ button{
 
 .btn-dark{
   border:2px solid black;
-  color:white;
+  color:var(--mainColor);
 }
 
 .App {
@@ -169,11 +169,26 @@ button{
 #postList{
   max-height: 85vh;
   overflow:auto;
-  position: relative;
+  position: sticky;
+  top:90px;
 }
 
 #postList h4{
   text-align: center;
+  position: sticky;
+  position: -webkit-sticky;
+  position: -moz-sticky;
+  position: -o-sticky;
+  position: -ms-sticky;
+  top:0;
+  background-color: white;
+  padding:0 0 15px 0;
+}
+
+#moreButton{
+  display: inline-block;
+  margin: 5px;
+  margin-left: 10px;
 }
 
 .showList{
@@ -234,18 +249,6 @@ button{
   padding-left: 18px;
 }
 
-#moreButton{
-  position: sticky;
-  position: -webkit-sticky;
-  position: -moz-sticky;
-  position: -o-sticky;
-  position: -ms-sticky;
-  top:5px;
-  margin-right: 3px;
-  margin-top: -8px;
-  display: inline-block;
-}
-
 .content{
   padding:60px 20px;
 }
@@ -266,7 +269,14 @@ button{
   max-width:100%;
   border-radius: 5px;
   margin-bottom: 40px;
+  // filter:blur(25px);
 }
+
+// .content_Img.effchange{
+//   border-radius: 5px;
+//   filter:blur(0);
+//   transition: all 1s;
+// }
 
 #imgForUpdate{
   width:100px;
@@ -309,6 +319,11 @@ button{
   border-radius: 10px 0 0 10px;
 }
 
+#t3innerframe{
+  position: sticky;
+  top:95px;
+}
+
 .nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link{
   padding : 5px;
   width: 50%;
@@ -332,7 +347,6 @@ button{
   cursor:pointer;
   padding:0;
   display: inline-block;
-  // overflow:hidden;
 }
 
 .thumbDiv h2{
@@ -408,18 +422,18 @@ button{
 
   #postList{
     padding:6px;
+    padding-top:0;
     margin: -360px 5px 20px 5px;
     border: 2px solid black;
     border-radius: 5px;
     transition: all 0.8s;
     max-height: 300px;
-    overflow-y: hidden;
+    position:unset;
   }
 
   #postList.listOpen{
     margin: -8px 5px 20px 5px;
     max-height: 80vh;
-    overflow-y:auto;  
   }
 
   .content{

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Navbar, Container, Nav, Row, Col, Button, Form, Image, InputGroup, FormControl, Tab, Tabs } from 'react-bootstrap';
 import './App.scss';
 import {Route, useHistory} from 'react-router-dom';
@@ -6,54 +6,21 @@ import moment from 'moment';
 import { ColorPicker, useColor } from "react-color-palette";
 import "react-color-palette/lib/css/styles.css";
 import Marquee from "react-fast-marquee";
-import { twelfth_content, eleventh_content, tenth_content,ninth_content, eighth_content, seventh_content, sixth_content, fifth_content, fourth_content, third_content, second_content, first_content } from './blogContent';
-import blind from './img/blind.jpg';
+import {start_posts, start_comms} from './start_post_comm';
 import book from './img/Book.gif';
-import butter from './img/butter.jpg';
-import butterfly from './img/butterfly.jpg';
-import frog from './img/frog.png';
 import kitty from './img/kitty.gif';
 import logo from './img/logo.png';
-import nail from './img/nail.jpg';
-import obstacle from './img/obstacle.jpg';
 import plant from './img/plant.gif';
 import stencil from './img/stencil.jpg';
 import user from './img/User.gif';
+import getEmoji from 'get-random-emoji';
 
-var showLists = document.getElementsByClassName('showList');
-var showSpans = document.getElementsByClassName('showSpan');
+let showLists = document.getElementsByClassName('showList');
+let showSpans = document.getElementsByClassName('showSpan');
 
 function App() {
-  let [commentArray, setCommentArray] = useState([
-    [{visitor : "visitor12", date : "Dec 12, 2020", comment : "Interesting!"}],
-    [{visitor : "visitor11", date : "Nov 11, 2020", comment : "I like it."}],
-    [{visitor : "visitor10", date : "Oct 10, 2020", comment : "Funny story!"}],
-    [{visitor : "visitor9", date : "Sep 9, 2020", comment : "Sad story!"}],
-    [{visitor : "visitor8", date : "Aug 8, 2020", comment : "interesting!"}],
-    [{visitor : "visitor7", date : "Jul 7, 2020", comment : "I like it."}, {visitor : "Wes", date : "Jul 7, 2021", comment : "interesting!"}],
-    [{visitor : "visitor6", date : "Jun 6, 2020", comment : "interesting!"}, {visitor : "James", date : "Jun 6, 2021", comment : "Funny story!"}],
-    [{visitor : "visitor5", date : "May 5, 2020", comment : "Smooth like butter!"}, {visitor : "Army", date : "May 5, 2021", comment : "BTS"}, {visitor : "Brisket", date : "Jun 6, 2021", comment : "I like it."}],
-    [{visitor : "visitor4", date : "Apr 4, 2020", comment : "interesting!"}],
-    [{visitor : "visitor3", date : "Mar 3, 2020", comment : "What a love!"}],
-    [{visitor : "visitor2", date : "Feb 2, 2020", comment : "I like it."}], 
-    [{visitor : "visitor1", date : "Jan 1, 2020", comment : "Beautiful!"}]
-  ]);
-
-  let [post, setPost] = useState([
-    {id : 11, title : "The Group of Frogs", image : frog, content : twelfth_content, date : "Dec 12, 2020", update_date : "", thumb : 5},
-    {id : 10, title : "A Pound of Butter", image : butter, content : eleventh_content, date : "Nov 11, 2020", update_date : "", thumb : 3},
-    {id : 9, title : "Control Your Temper", image : nail, content : tenth_content, date : "Oct 10, 2020", update_date : "", thumb : 2},
-    {id : 8, title : "The Blind Girl", image : blind, content : ninth_content, date : "Sep 9, 2020", update_date : "", thumb : 9},
-    {id : 7, title : "The Obstacle In Our Path", image : obstacle, content : eighth_content, date : "Aug 8, 2020", update_date : "", thumb : 8},
-    {id : 6, title : "The Butterfly", image : butterfly, content : seventh_content, date : "Jul 7, 2020", update_date : "", thumb : 2},
-    {id : 5, title : "The Group of Frogs", image : frog, content : sixth_content, date : "Jun 6, 2020", update_date : "", thumb : 0}, 
-    {id : 4, title : "A Pound of Butter", image : butter, content : fifth_content, date : "May 5, 2020", update_date : "", thumb : 0}, 
-    {id : 3, title : "Control Your Temper", image : nail, content : fourth_content, date : "Apr 4, 2020", update_date : "", thumb : 3},
-    {id : 2, title : "The Blind Girl", image : blind, content : third_content, date : "Mar 3, 2020", update_date : "", thumb : 2},
-    {id : 1, title : "The Obstacle In Our Path", image : obstacle, content : second_content, date : "Feb 2, 2020", update_date : "", thumb : 5},
-    {id : 0, title : "The Butterfly", image : butterfly, content : first_content, date : "Jan 1, 2020", update_date : "", thumb : 7}
-  ]);
-
+  let [commentArray, setCommentArray] = useState(start_comms);
+  let [post, setPost] = useState(start_posts);
   let [currentPage, setCurrentPage] = useState(0);
   let [isListShort, setIsListShort] = useState(true);
   let [listButtonName, setListButtonName] = useState('More')
@@ -69,13 +36,17 @@ function App() {
   let [gifImg, setGifImg] = useState(book);
   let [nowColor, setNowColor] = useState("#ffc107");
   let [color, setColor] = useColor("hex", "#ffc107");
-
+  let [expanded, setExpanded] = useState(false);
+  let [titleEmoji, setTitleEmoji] = useState('');
   let input_form = {id : "", title : "", image : "", content : "", date : "", update_date : "" , thumb : 0};
   let comment_form = {visitor : "", date : "", comment : ""};
   let history = useHistory();
   let today = moment().format("MMM DD, YYYY");
 
-  const [expanded, setExpanded] = useState(false);
+  useEffect(() => {
+    var titleemoji = getEmoji();
+    setTitleEmoji(titleemoji);
+  }, [currentPage])
   
   return (
     <div className="App">
@@ -84,7 +55,7 @@ function App() {
           <Navbar.Brand id="blogtitle" >
             <button onClick={()=>{
               window.location.href="http://kimportfollio.dothome.co.kr/blog";
-            }}><img src={logo} loading="lazy"/> React Blog
+            }}><img src={logo} alt="reactlogo" loading="lazy"/> React Blog
             </button>
           </Navbar.Brand>
           <Button id="phoneList" variant="warning" onClick={()=>{
@@ -92,7 +63,6 @@ function App() {
             updownList.classList.toggle('listOpen');
             window.scrollTo(0,0);
           }}>List</Button>
-
           <Navbar.Toggle aria-controls="basic-navbar-nav" onClick={() => setExpanded(!expanded)}/>
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
@@ -102,7 +72,7 @@ function App() {
                   setGifImg(book);
                   history.push('/blog');
                   setExpanded(false);
-                }}>See postings</Button></Nav.Link>
+                }}>See posts</Button></Nav.Link>
                 : null
               }
               {
@@ -112,7 +82,7 @@ function App() {
                   history.push('/blog/input');
                   setGifImg(plant);
                   setExpanded(false);
-                }}>Add a posting</Button></Nav.Link>
+                }}>Add a post</Button></Nav.Link>
                 : null
               }
               <Nav.Link><Button variant="outline-secondary" onClick={()=>{
@@ -126,7 +96,7 @@ function App() {
                     if (colorpick.style.display === "block"){
                       colorpick.style.display = "none";
                     } else colorpick.style.display = "block";
-                    change_Color(nowColor);
+                    Change_Color(nowColor);
                   }}>Color <span style={{color:color.hex, backgroundColor:color.hex}} id="colorCircle">OK</span></Button>
                 <div id="colorPicker">
                   <ColorPicker width={280} height={150} color={color} onChange={setColor} hideHSV/>
@@ -135,14 +105,14 @@ function App() {
                     var newHex = curHex+'66';
                     document.documentElement.style.setProperty('--mainColor', curHex);
                     document.documentElement.style.setProperty('--mainColor_opa', newHex);
-                    change_Color(curHex);
+                    Change_Color(curHex);
                     setNowColor(curHex);
                     document.getElementById('colorPicker').style.display = "none";
                     setExpanded(false);
                   }}>Choose</Button>
                   <Button variant="outline-secondary" onClick={()=>{
                     document.getElementById('colorPicker').style.display = "none";
-                    change_Color(nowColor);
+                    Change_Color(nowColor);
                     setExpanded(false);
                   }}>Cancel</Button>
                 </div>
@@ -152,44 +122,43 @@ function App() {
           </Navbar.Collapse>
         </Container>
       </Navbar>
-
       <Container className="frame">
         <Row>
             <Col className="list" lg={4} xl={3}>
               <div id="userPage">
-                <h5><Image src={stencil} loading="lazy" roundedCircle /> James</h5>
+                <h5><Image src={stencil} alt="stencil" loading="lazy" roundedCircle /> James</h5>
                 <p>Thank you for visiting my blog! <br/>Have a wonderful day!</p>
               </div>
-              <div id="movingimg"><img src={gifImg} loading="lazy"/><br/><span>Today : {today}</span><hr/></div>
-              
+              <div id="movingimg"><img src={gifImg} alt="gifimage"loading="lazy"/><br/><span>Today : {today}</span><hr/></div>
               <div id="postList">
-                <h4  onMouseEnter={() => setEmoji('🤣')} onMouseLeave={() => setEmoji('😎')}>{emoji} Posting List</h4>
-                <br/>
+                <h4 onMouseEnter={() => setEmoji('🤣')} onMouseLeave={() => setEmoji('😎')}>{emoji} Post List
                   <p id="moreButton">
-                      <Button variant="outline-warning" onClick={()=>{
-                        for(var i=0; i<showLists.length; i++){
-                          showLists[i].style.maxHeight = 'none';
-                        }   
-                        setIsListShort(!isListShort);
-                        if (isListShort === true) {
-                          setListButtonName('Less')
-                          for(var j=0; j<showLists.length; j++){
-                            showLists[j].style.maxHeight = 'none';
-                          }
-                        } else {
-                          setListButtonName('More')
-                          for(var k=0; k<showLists.length; k++){
-                            showLists[k].style.maxHeight = 0;
-                            if (k === currentPage || k === currentPage+1 || k === currentPage+2) {
-                              showLists[k].style.maxHeight = 'none'; 
-                            }
+                    <Button variant="outline-warning" onClick={()=>{
+                      for(var i=0; i<showLists.length; i++){
+                        showLists[i].style.maxHeight = 'none';
+                      }   
+                      setIsListShort(!isListShort);
+                      if (isListShort === true) {
+                        setListButtonName('Less')
+                        for(var j=0; j<showLists.length; j++){
+                          showLists[j].style.maxHeight = 'none';
+                        }
+                      } else {
+                        setListButtonName('More')
+                        for(var k=0; k<showLists.length; k++){
+                          showLists[k].style.maxHeight = 0;
+                          if (k === currentPage || k === currentPage+1 || k === currentPage+2) {
+                            showLists[k].style.maxHeight = 'none'; 
                           }
                         }
-                      }}>{listButtonName}</Button>
-                    </p>
+                      }
+                    }}>{listButtonName}</Button>
+                  </p>
+                </h4>
+                {/* <br/> */}
                   <div className="showList">
                       <h5><span className="showSpan">▶ </span>(No previous page)</h5>
-                      <p>Please create a new posting.</p>
+                      <p>Please create a new post.</p>
                   </div>
                   {
                     post.map(function(a){
@@ -213,19 +182,18 @@ function App() {
                   }
                   <div className="showList">
                     <h5><span className="showSpan">▶ </span>(No next page)</h5>
-                    <p>This is the first posting!</p>
+                    <p>This is the first post!</p>
                   </div>
                   <hr/>
-              </div>      
+              </div> {/* postList */}
             </Col> {/* list */}
-            
           <Route exact path="/blog">  
             <Col className="content" lg={8} xl={7}>
               {
                 post.length === 0
-                ? <h4>"No Postings!"</h4>
+                ? <h4>"No Posts!"</h4>
                 : <div>
-                    <h4>🍀 {post[currentPage].title}</h4>
+                    <h4>{titleEmoji} {post[currentPage].title}</h4>
                     <h6>{post[currentPage].date} {post[currentPage].update_date}</h6>
                     <h6>
                     { loginAs === 'James'
@@ -318,7 +286,7 @@ function App() {
                                       )
                                     })
                                   }
-                                  <p>{c.visitor} {c.date}<button onClick={()=>{
+                                  <p>{c.visitor} / {c.date}<button onClick={()=>{
                                     if (window.confirm('Are you sure you want to delete this comment?')){
                                       var Copy_comment = [...commentArray];
                                       Copy_comment[currentPage].splice(index, 1);
@@ -338,13 +306,13 @@ function App() {
                       if(currentPage > 0) {
                         setCurrentPage(currentPage - 1);
                         Reset_List(isListShort={isListShort}, currentPage - 1);
-                      } else alert("This is the first posting.");
+                      } else alert("This is the first post.");
                       window.scrollTo(0,0);
                     }}>◀ Prev</Button> &nbsp; &nbsp; <Button variant="warning" onClick={()=>{
                       if(currentPage < (post.length - 1)){ 
                         setCurrentPage(currentPage + 1);
                         Reset_List(isListShort={isListShort}, currentPage + 1);
-                      } else alert("This is the last posting.");
+                      } else alert("This is the last post.");
                       window.scrollTo(0,0);
                     }}>Next ▶</Button> </div>
                   </div>
@@ -356,7 +324,7 @@ function App() {
 
           <Route path="/blog/input">
             <Col className="content" lg={8} xl={7}>
-            <h4>New posting</h4>
+            <h4>{titleEmoji} New post</h4>
               <Form>
                 <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
                   <Form.Label>Title</Form.Label>
@@ -412,7 +380,7 @@ function App() {
                 post.length === 0
                 ? null
                 : <div>
-                    <h4>Update posting</h4>
+                    <h4>{titleEmoji} Update post</h4>
                     <Form>
                       <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
                         <Form.Label>Title</Form.Label>
@@ -465,7 +433,7 @@ function App() {
           
           <Route path="/blog/login">
             <Col className="content" lg={8} xl={7}>
-            <h4>Login As : </h4>
+            <h4>{titleEmoji} Login As : </h4>
             <br/>
             <InputGroup>
               <InputGroup.Radio id="user_Radio" name="login_Radio" checked/>
@@ -503,19 +471,20 @@ function App() {
           </Route> {/* // login */}
 
           <Col className="topthree" xl={2}>
-            <Tabs defaultActiveKey="thumb" id="uncontrolled-tab-example" className="mt-3">
-              
-              <Tab id="topthumb" eventKey="thumb" title="👍 Top3">
-                <Thumb_Top3 post={post} setCurrentPage={setCurrentPage} setImageUrl={setImageUrl} isListShort={isListShort} history={history}></Thumb_Top3>
-              </Tab>
-              
-              <Tab eventKey="comment" title="💬 Top3">
-                <Comment_Top3 post={post} commentArray={commentArray} setCurrentPage={setCurrentPage} setImageUrl={setImageUrl} isListShort={isListShort} history={history}></Comment_Top3>
-              </Tab>
-              
-            </Tabs>
+            <div id="t3innerframe">
+              <Tabs defaultActiveKey="thumb" id="uncontrolled-tab-example" className="mt-3">
+                
+                <Tab id="topthumb" eventKey="thumb" title="👍 Top3">
+                  <Thumb_Top3 post={post} setCurrentPage={setCurrentPage} setImageUrl={setImageUrl} isListShort={isListShort} history={history}></Thumb_Top3>
+                </Tab>
+                
+                <Tab eventKey="comment" title="💬 Top3">
+                  <Comment_Top3 post={post} commentArray={commentArray} setCurrentPage={setCurrentPage} setImageUrl={setImageUrl} isListShort={isListShort} history={history}></Comment_Top3>
+                </Tab>
+                
+              </Tabs>
+            </div>  
           </Col>  {/* topthree */}
-         
         </Row>
       </Container>
     </div>
@@ -536,7 +505,7 @@ function Thumb_Top3(props){
   var topthree = Copy_post.slice(0, 3);
   if (topthree.length === 0){
     return(
-      <h5>"No Postings!"</h5>
+      <h5>"No Posts!"</h5>
     )
   } else {
     return(
@@ -563,11 +532,11 @@ function Thumb_Top3(props){
           >
             {
               a.image === ''
-              ? <Image className = "thumbTop3" src={logo} loading="lazy"></Image>
-              : <Image className = "thumbTop3" src={a.image} loading="lazy"></Image>
+              ? <Image className = "thumbTop3" src={logo} alt="reactlogo" loading="lazy"></Image>
+              : <Image className = "thumbTop3" src={a.image} alt="postimage" loading="lazy"></Image>
             }
             <h2>OPEN</h2>
-            <Marquee gradient={false} play={false} pauseOnHover={true} className="thumbTitle">👍 {a.thumb} : {a.title}&nbsp;&nbsp;</Marquee>
+            <Marquee gradient={false} play={false} pauseOnHover={false} className="thumbTitle">👍 {a.thumb} : {a.title}&nbsp;&nbsp;</Marquee>
           </div>
         )
       })
@@ -594,7 +563,7 @@ function Comment_Top3(props){
 
   if (comment_top3_in_post.length === 0){
     return(
-      <h5>"No Postings!"</h5>
+      <h5>"No Posts!"</h5>
     )
   } else {
     return(
@@ -621,11 +590,11 @@ function Comment_Top3(props){
           >
             {
               a.image === ''
-              ? <Image className = "thumbTop3" src={logo} loading="lazy"></Image>
-              : <Image className = "thumbTop3" src={a.image} loading="lazy"></Image>
+              ? <Image className = "thumbTop3" src={logo} alt="reactlogo" loading="lazy"></Image>
+              : <Image className = "thumbTop3" src={a.image} alt="postimage" loading="lazy"></Image>
             }
             <h2>OPEN</h2>
-            <Marquee gradient={false} play={false} pauseOnHover={true} className="thumbTitle">💬 {topthree[i].length} : {a.title}&nbsp;&nbsp;</Marquee>
+            <Marquee gradient={false} play={false} pauseOnHover={false} className="thumbTitle">💬 {topthree[i].length} : {a.title}&nbsp;&nbsp;</Marquee>
           </div>
         )
       })
@@ -689,7 +658,7 @@ function Add_Reset_List(props, showNum){
   }
 }
 
-function change_Color(newColor){
+function Change_Color(newColor){
   document.getElementById('colorCircle').style.color = newColor;
   document.getElementById('colorCircle').style.backgroundColor = newColor;
 }

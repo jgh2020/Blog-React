@@ -7,16 +7,16 @@ import nail from './img/nail.jpg';
 import obstacle from './img/obstacle.jpg';
 
 let start_posts = [
-    {id : 11, title : "The Group of Frogs", image : frog, content : twelfth_content, date : "Dec 12, 2020", update_date : "", thumb : 5},
-    {id : 10, title : "A Pound of Butter", image : butter, content : eleventh_content, date : "Nov 11, 2020", update_date : "", thumb : 3},
+    {id : 11, title : "The Group of Frogs", image : frog, content : twelfth_content, date : "Dec 12, 2020", update_date : "(Update : Jun 6, 2021)", thumb : 5},
+    {id : 10, title : "A Pound of Butter", image : butter, content : eleventh_content, date : "Nov 11, 2020", update_date : "(Update : May 5, 2021)", thumb : 3},
     {id : 9, title : "Control Your Temper", image : nail, content : tenth_content, date : "Oct 10, 2020", update_date : "", thumb : 2},
-    {id : 8, title : "The Blind Girl", image : blind, content : ninth_content, date : "Sep 9, 2020", update_date : "", thumb : 9},
+    {id : 8, title : "The Blind Girl", image : blind, content : ninth_content, date : "Sep 9, 2020", update_date : "(Update : Apr 4, 2021)", thumb : 9},
     {id : 7, title : "The Obstacle In Our Path", image : obstacle, content : eighth_content, date : "Aug 8, 2020", update_date : "", thumb : 8},
     {id : 6, title : "The Butterfly", image : butterfly, content : seventh_content, date : "Jul 7, 2020", update_date : "", thumb : 2},
-    {id : 5, title : "The Group of Frogs", image : frog, content : sixth_content, date : "Jun 6, 2020", update_date : "", thumb : 0}, 
+    {id : 5, title : "The Group of Frogs", image : frog, content : sixth_content, date : "Jun 6, 2020", update_date : "(Update : Mar 3, 2021)", thumb : 0}, 
     {id : 4, title : "A Pound of Butter", image : butter, content : fifth_content, date : "May 5, 2020", update_date : "", thumb : 0}, 
     {id : 3, title : "Control Your Temper", image : nail, content : fourth_content, date : "Apr 4, 2020", update_date : "", thumb : 3},
-    {id : 2, title : "The Blind Girl", image : blind, content : third_content, date : "Mar 3, 2020", update_date : "", thumb : 2},
+    {id : 2, title : "The Blind Girl", image : blind, content : third_content, date : "Mar 3, 2020", update_date : "(Update : Jan 2, 2021)", thumb : 2},
     {id : 1, title : "The Obstacle In Our Path", image : obstacle, content : second_content, date : "Feb 2, 2020", update_date : "", thumb : 5},
     {id : 0, title : "The Butterfly", image : butterfly, content : first_content, date : "Jan 1, 2020", update_date : "", thumb : 7}
 ];

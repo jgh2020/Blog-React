@@ -1,9 +1,13 @@
 import { useState, useEffect } from 'react';
-import { Navbar, Container, Nav, Row, Col, Button, Form, Image, InputGroup, FormControl, Tab, Tabs } from 'react-bootstrap';
+import { Navbar, Container, Nav, Row, Col, Button, Form, Image, Tab, Tabs } from 'react-bootstrap';
 import './App.scss';
-import {Route, useHistory} from 'react-router-dom';
+import {Route, useHistory, useLocation } from 'react-router-dom';
 import moment from 'moment'; 
 import { ColorPicker, useColor } from "react-color-palette";
+import Input from './input';
+import Update from './update';
+import Search from './search';
+import Login from './login';
 import "react-color-palette/lib/css/styles.css";
 import Marquee from "react-fast-marquee";
 import {start_posts, start_comms} from './start_post_comm';
@@ -13,6 +17,7 @@ import logo from './img/logo.png';
 import plant from './img/plant.gif';
 import stencil from './img/stencil.jpg';
 import user from './img/User.gif';
+import search from './img/search.gif';
 import getEmoji from 'get-random-emoji';
 
 let showLists = document.getElementsByClassName('showList');
@@ -33,15 +38,18 @@ function App() {
   let [isCommentInputOpen, setIsCommentInputOpen] = useState(false);
   let [loginAs,  setLoginAs] = useState('James');
   let [emoji, setEmoji] = useState('😎');
-  let [gifImg, setGifImg] = useState(book);
   let [nowColor, setNowColor] = useState("#ffc107");
   let [color, setColor] = useColor("hex", "#ffc107");
   let [expanded, setExpanded] = useState(false);
   let [titleEmoji, setTitleEmoji] = useState('');
+  let gifImg = [book, kitty, plant, search, user];
   let input_form = {id : "", title : "", image : "", content : "", date : "", update_date : "" , thumb : 0};
   let comment_form = {visitor : "", date : "", comment : ""};
   let history = useHistory();
   let today = moment().format("MMM DD, YYYY");
+  let loginIntro = ['Now you are the owner of this blog. You can add, update, or delete posts. If you refresh the page, it returns to its original state.',
+                    'Now you are a guest. You can read posts and post comments. If you refresh the page, it returns to its original state.']
+  let [greeting, setGreeting] = useState(loginIntro[0]) 
 
   useEffect(() => {
     var titleemoji = getEmoji();
@@ -55,8 +63,7 @@ function App() {
           <Navbar.Brand id="blogtitle" >
             <button onClick={()=>{
               window.location.href="http://kimportfollio.dothome.co.kr/blog";
-            }}><img src={logo} alt="reactlogo" loading="lazy"/> React Blog
-            </button>
+            }}><img src={logo} alt="reactlogo" loading="lazy"/> React Blog</button>
           </Navbar.Brand>
           <Button id="phoneList" variant="warning" onClick={()=>{
             var updownList = document.getElementById('postList');
@@ -69,10 +76,9 @@ function App() {
               {
                 loginAs === 'James'
                 ? <Nav.Link><Button variant="warning" onClick={()=>{
-                  setGifImg(book);
                   history.push('/blog');
                   setExpanded(false);
-                }}>See posts</Button></Nav.Link>
+                }}>📖<span className = "iconbtn"> Read posts</span></Button></Nav.Link>
                 : null
               }
               {
@@ -80,16 +86,18 @@ function App() {
                 ? <Nav.Link><Button variant="warning" onClick={()=>{
                   setImageUrl('');
                   history.push('/blog/input');
-                  setGifImg(plant);
                   setExpanded(false);
-                }}>Add a post</Button></Nav.Link>
+                }}>➕<span className = "iconbtn"> Add a post</span></Button></Nav.Link>
                 : null
               }
               <Nav.Link><Button variant="outline-secondary" onClick={()=>{
-                setGifImg(user);
+                history.push('/blog/search');
+                setExpanded(false);
+              }}>🔍<span className = "iconbtn"> Search</span></Button></Nav.Link>
+              <Nav.Link><Button variant="outline-secondary" onClick={()=>{
                 history.push('/blog/login');
                 setExpanded(false);
-              }}>Login : {loginAs}</Button></Nav.Link>
+              }}>🔒<span className = "iconbtn"> Login : {loginAs}</span></Button></Nav.Link>
               <Nav.Link id="colorFrame">
                 <Button variant="outline-secondary" onClick={()=>{
                     var colorpick = document.getElementById('colorPicker');
@@ -97,7 +105,7 @@ function App() {
                       colorpick.style.display = "none";
                     } else colorpick.style.display = "block";
                     Change_Color(nowColor);
-                  }}>Color <span style={{color:color.hex, backgroundColor:color.hex}} id="colorCircle">OK</span></Button>
+                  }}><span style={{color:color.hex, backgroundColor:color.hex}} id="colorCircle">OK</span><span className = "iconbtn"> Color</span></Button>
                 <div id="colorPicker">
                   <ColorPicker width={280} height={150} color={color} onChange={setColor} hideHSV/>
                   <Button variant="outline-secondary" onClick={()=>{
@@ -117,7 +125,7 @@ function App() {
                   }}>Cancel</Button>
                 </div>
               </Nav.Link>
-              <Nav.Link href="http://kimportfollio.dothome.co.kr/"><Button variant="dark">Portfolio</Button></Nav.Link>
+              <Nav.Link href="http://kimportfollio.dothome.co.kr/"><Button variant="dark">P<span className = "iconbtn">ort</span>f<span className = "iconbtn">olio</span></Button></Nav.Link>
             </Nav>
           </Navbar.Collapse>
         </Container>
@@ -127,9 +135,11 @@ function App() {
             <Col className="list" lg={4} xl={3}>
               <div id="userPage">
                 <h5><Image src={stencil} alt="stencil" loading="lazy" roundedCircle /> James</h5>
-                <p>Thank you for visiting my blog! <br/>Have a wonderful day!</p>
+                <p>{greeting}</p>
               </div>
-              <div id="movingimg"><img src={gifImg} alt="gifimage"loading="lazy"/><br/><span>Today : {today}</span><hr/></div>
+              <div id="movingimg">            
+                <MovingImg gifImg={gifImg}/><br/><h6>Today : {today}</h6><hr/>
+              </div>
               <div id="postList">
                 <h4 onMouseEnter={() => setEmoji('🤣')} onMouseLeave={() => setEmoji('😎')}>{emoji} Post List
                   <p id="moreButton">
@@ -155,10 +165,9 @@ function App() {
                     }}>{listButtonName}</Button>
                   </p>
                 </h4>
-                {/* <br/> */}
                   <div className="showList">
                       <h5><span className="showSpan">▶ </span>(No previous page)</h5>
-                      <p>Please create a new post.</p>
+                      <p>Please add a new post.</p>
                   </div>
                   {
                     post.map(function(a){
@@ -182,11 +191,12 @@ function App() {
                   }
                   <div className="showList">
                     <h5><span className="showSpan">▶ </span>(No next page)</h5>
-                    <p>This is the first post!</p>
+                    <p>No post!</p>
                   </div>
                   <hr/>
               </div> {/* postList */}
             </Col> {/* list */}
+
           <Route exact path="/blog">  
             <Col className="content" lg={8} xl={7}>
               {
@@ -200,8 +210,7 @@ function App() {
                       ? <div id="updel">
                           <Button variant="outline-warning" onClick={()=>{
                             setImageUrl(post[currentPage].image);
-                            setGifImg(kitty);
-                            history.push('/blog/Update');
+                            history.push('/blog/update');
                           }}>Update</Button>
                           <Button variant="outline-warning" onClick={()=>{
                             if (window.confirm('Are you sure you want to delete this post?')){
@@ -267,7 +276,6 @@ function App() {
                             }
                           } }>Submit</Button>
                           <Button variant="outline-dark" onClick={()=>{ setIsCommentInputOpen(false)}}>Cancel</Button>
-                          {/* <hr/> */}
                         </Form>
                       : null  
                     }
@@ -317,174 +325,45 @@ function App() {
                     }}>Next ▶</Button> </div>
                   </div>
               }
-              {/* <hr/> */}
             </Col>
-            
           </Route> {/* // Basic */}
-
-          <Route path="/blog/input">
-            <Col className="content" lg={8} xl={7}>
-            <h4>{titleEmoji} New post</h4>
-              <Form>
-                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                  <Form.Label>Title</Form.Label>
-                  <Form.Control placeholder="Title here." onChange={ (e)=>{ setInputTitle(e.target.value) } }/>
-                </Form.Group>
-
-                <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
-                  <Form.Label>Content</Form.Label>
-                  <Form.Control as="textarea" rows={5} placeholder="Content here." onChange={ (e)=>{ setInputContent(e.target.value) } }/>
-                </Form.Group>
-                <Image id = "imgForUpdate" src={imageUrl} loading="lazy" rounded/>
-                <Form.Group id="imgFile" className="mb-3" accept="image/*" onChange={ (e)=>{ setImageUrl(window.URL.createObjectURL(e.target.files[0]))}}>
-                  <Form.Label>Add an Image : &nbsp;</Form.Label>
-                  <Form.Control type="file" />
-                </Form.Group>
-                <br/>
-
-                <Button variant="outline-warning" onClick={ ()=>{
-                  input_form.id = post.length;
-                  input_form.title = InputTitle;
-                  input_form.image = imageUrl;
-                  input_form.content = inputContent;
-                  input_form.date = today;
-                  var Copy_post = [...post];
-                  var Copy_comment = [...commentArray];
-                  
-                  if (InputTitle === "" || inputContent === ""){
-                    alert('Please fill all two fields!');    
-                  } else {
-                    Copy_post.unshift(input_form); 
-                    setPost(Copy_post);
-                    Copy_comment.unshift([]);
-                    setCommentArray(Copy_comment);
-                    setCurrentPage(0);
-                    setInputTitle("");
-                    setInputContent("");
-                    setGifImg(book);
-                    history.push('/blog');
-                    Add_Reset_List(isListShort={isListShort}, 0);
-                  }
-                } }>Add</Button>
-                <Button variant="outline-warning" onClick={()=>{
-                  setGifImg(book);
-                  history.push('/blog');
-                }}>Cancel</Button>
-              </Form>
-            </Col>
-          </Route> {/* // Input */}
-
-          <Route path="/blog/Update">
-            <Col className="content" lg={8} xl={7}>
-              {
-                post.length === 0
-                ? null
-                : <div>
-                    <h4>{titleEmoji} Update post</h4>
-                    <Form>
-                      <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                        <Form.Label>Title</Form.Label>
-                        <Form.Control key={post[currentPage].title} defaultValue={post[currentPage].title} onChange={ (e)=>{ setInputTitle(e.target.value) } }/>
-                      </Form.Group>
-                      <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
-                        <Form.Label>Content</Form.Label>
-                        <Form.Control as="textarea" rows={5} key={post[currentPage].content} defaultValue={post[currentPage].content} onChange={ (e)=>{ setInputContent(e.target.value) } }/>
-                      </Form.Group>
-                      <Image id = "imgForUpdate" src={imageUrl} loading="lazy" rounded/>
-                      <Form.Group id="imgFile" className="mb-3" accept="image/*" onChange={ (e)=>{ setImageUrl(window.URL.createObjectURL(e.target.files[0]))}}>
-                        <Form.Label>Update Image : &nbsp;</Form.Label>
-                        <Form.Control type="file" />
-                      </Form.Group>
-                      <br/>
-                      <Button variant="outline-warning" onClick={ ()=>{
-                        if (InputTitle === ""){
-                          input_form.title = post[currentPage].title;
-                        } else input_form.title = InputTitle;
-                        
-                        if (inputContent === ""){
-                          input_form.content = post[currentPage].content;
-                        } else {
-                            input_form.content = inputContent;
-                        }
-
-                        input_form.image = imageUrl;
-                        input_form.id = post[currentPage].id;
-                        input_form.date = post[currentPage].date;
-                        input_form.update_date = "(Update : "+today+" )";
-                        input_form.thumb = post[currentPage].thumb;
-
-                        var Copy_post = [...post];
-                        Copy_post[currentPage] = input_form;
-                        setPost(Copy_post); 
-                        setInputTitle("");
-                        setInputContent("");
-                        setGifImg(book);
-                        history.push('/blog');
-                      } }>Update</Button>
-                      <Button variant="outline-warning" onClick={()=>{
-                        setGifImg(book);
-                        history.push('/blog');
-                      }}>Cancel</Button>
-                    </Form>
-                  </div>
-              }
-            </Col>
-          </Route> {/* // Update */}
-          
-          <Route path="/blog/login">
-            <Col className="content" lg={8} xl={7}>
-            <h4>{titleEmoji} Login As : </h4>
-            <br/>
-            <InputGroup>
-              <InputGroup.Radio id="user_Radio" name="login_Radio" checked/>
-              <FormControl value="Login as a USER (James)"  />
-            </InputGroup>
-            <br/>
-            <InputGroup>
-              {
-                loginAs === 'Guest'
-                ? <InputGroup.Radio id="guest_Radio" name="login_Radio" checked/>
-                : <InputGroup.Radio id="guest_Radio" name="login_Radio" />
-              }
-              <FormControl value="Login as a GUEST" />
-            </InputGroup>
-            <br/><br/>
-            
-              <Button variant="outline-warning" onClick={ ()=>{
-                if (document.getElementById('user_Radio').checked === true){
-                  setLoginAs('James')
-                  document.getElementById('user_Radio').checked = true;
-                  history.push('/blog');
-                } else if (document.getElementById('guest_Radio').checked === true){
-                  setLoginAs('Guest')
-                  document.getElementById('guest_Radio').checked = true;
-                  history.push('/blog');
-                }
-                setGifImg(book);
-              } }>Log In</Button>
-              <Button variant="outline-warning" onClick={()=>{
-                setGifImg(book);
-                history.push('/blog');
-              }}>Cancel</Button>
-            
-            </Col>
-          </Route> {/* // login */}
-
+          <Input post={post} titleEmoji={titleEmoji} imageUrl={imageUrl} input_form={input_form} InputTitle={InputTitle} inputContent={inputContent} today={today} commentArray={commentArray}  history={history} isListShort={isListShort}
+                  setPost={setPost} setInputTitle={setInputTitle} setInputContent={setInputContent} setImageUrl={setImageUrl}  Add_Reset_List={Add_Reset_List} setCommentArray={setCommentArray} setCurrentPage={setCurrentPage}/>
+          <Update post={post}  titleEmoji={titleEmoji} currentPage={currentPage} imageUrl={imageUrl}  today={today} history={history} InputTitle={InputTitle} input_form={input_form} inputContent={inputContent}
+                  setPost={setPost} setImageUrl={setImageUrl} setInputTitle={setInputTitle} setInputContent={setInputContent}/>
+          <Search post={post} titleEmoji={titleEmoji} history={history} setCurrentPage={setCurrentPage}/>
+          <Login titleEmoji={titleEmoji} loginAs={loginAs} setLoginAs={setLoginAs} history={history} loginIntro={loginIntro} setGreeting = {setGreeting}/>
           <Col className="topthree" xl={2}>
             <div id="t3innerframe">
               <Tabs defaultActiveKey="thumb" id="uncontrolled-tab-example" className="mt-3">
-                
                 <Tab id="topthumb" eventKey="thumb" title="👍 Top3">
                   <Thumb_Top3 post={post} setCurrentPage={setCurrentPage} setImageUrl={setImageUrl} isListShort={isListShort} history={history}></Thumb_Top3>
                 </Tab>
-                
                 <Tab eventKey="comment" title="💬 Top3">
                   <Comment_Top3 post={post} commentArray={commentArray} setCurrentPage={setCurrentPage} setImageUrl={setImageUrl} isListShort={isListShort} history={history}></Comment_Top3>
                 </Tab>
-                
               </Tabs>
-            </div>  
-          </Col>  {/* topthree */}
+            </div>
+            <div id="gotoTop"><p>Top</p>
+              <Button variant="outline-secondary" onClick={()=>{
+                  window.scrollTo(0,0)
+                  let rocket = document.getElementById('rocket');
+                  let fullheight = (-1)*window.innerHeight;
+                  if (window.innerWidth < 1200) fullheight = (-1)*(window.innerHeight + window.pageYOffset);
+                  rocket.style.marginTop = ""+fullheight+"px";
+                  rocket.style.transform = 'rotate(-45deg)';
+                  setTimeout(() => {
+                    rocket.style.visibility = "hidden";
+                    rocket.style.marginTop = 'unset';
+                    rocket.style.transform = 'unset';
+                  }, 1500);
+                  setTimeout(() => {
+                    rocket.style.visibility = "unset";
+                  }, 2600);
+                }}><div id="rocket">🚀</div></Button><br/>
+            </div>
+            
+          </Col>  {/* topthree */} 
         </Row>
       </Container>
     </div>
@@ -663,5 +542,21 @@ function Change_Color(newColor){
   document.getElementById('colorCircle').style.backgroundColor = newColor;
 }
 
+function MovingImg(props){
+  const location = useLocation();
+  let routeName = location.pathname;
+  let elNum = 0;
+  if (routeName === '/blog') elNum = 0;
+  else if (routeName === '/blog/update') elNum = 1;
+  else if (routeName === '/blog/input') elNum = 2;
+  else if (routeName === '/blog/search') elNum = 3;
+  else if (routeName === '/blog/login') elNum = 4;
+  return(
+    <img src={props.gifImg[elNum]} alt="gifimage"loading="lazy"/>
+  )
+}
+
 export default App;
+export {Add_Reset_List};
+
 

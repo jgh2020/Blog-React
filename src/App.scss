@@ -112,6 +112,19 @@ button{
   top:0;
 }
 
+#navbar Button{
+  min-width:55px;
+}
+
+#navbar Button:hover .iconbtn{
+  font-size: 1rem;
+}
+
+.iconbtn{
+  font-size: 0;
+  transition: all 0.8s;
+}
+
 .frame{
   position : relative;
   top:10vh;
@@ -124,7 +137,6 @@ button{
   border-radius: 5px;
   padding:10px;
 }
-
 
 #userPage h5{
   text-align: center;
@@ -140,16 +152,18 @@ button{
   font-size: 14px;
   color: black;
   text-align: center;
+  margin-bottom: 0;
 }
 
 #movingimg{
-  padding-top:16px;
+  padding:16px;
   text-align: center;
 }
 
 #movingimg img{
-  height:60px;
-  width:60px;
+  height:50px;
+  width:50px;
+  margin:1px 0 9px 0;
 }
 
 .list{
@@ -157,6 +171,7 @@ button{
   padding-top:12px;
   padding-bottom:12px;
   margin-top:14px;
+  margin-bottom:14px;
   border: 2px solid var(--mainColor);
   border-left: 0px;
   text-align: right;
@@ -212,7 +227,7 @@ button{
 
 .showList:hover h5{
   cursor: pointer;
-  color:var(--mainColor_opa);
+  color:var(--mainColor);
 }
 
 .showList:first-of-type:hover h5, .showList:last-of-type:hover h5{
@@ -269,14 +284,7 @@ button{
   max-width:100%;
   border-radius: 5px;
   margin-bottom: 40px;
-  // filter:blur(25px);
 }
-
-// .content_Img.effchange{
-//   border-radius: 5px;
-//   filter:blur(0);
-//   transition: all 1s;
-// }
 
 #imgForUpdate{
   width:100px;
@@ -304,15 +312,32 @@ button{
 
 #commform{
   background-color: var(--mainColor_opa);
-  /* text-align: center; */
   padding:10px;
   border:2px solid black;
   border-radius: 5px;
 }
 
+#searchResult{
+  padding: 0 30px;
+  height: 55vh;
+  overflow: auto;
+}
+
+#searchResult h6{
+  text-align: left;
+  border-bottom : 1px solid lightgray;
+  padding-bottom:6px;
+}
+
+#searchResult h6:hover{
+  color: var(--mainColor);
+  cursor: pointer;
+}
+
 .topthree{
   border-left: 0;
   margin-top: 14px;
+  margin-bottom:14px;
   padding-bottom:12px;
   border: 2px solid var(--mainColor);
   border-right: 0px;
@@ -327,6 +352,7 @@ button{
 .nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link{
   padding : 5px;
   width: 50%;
+  margin-top:-3px;
 }
 
 .nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active{
@@ -380,10 +406,37 @@ button{
   text-overflow:ellipsis;
   overflow:hidden;
   margin: 0;
-  // background-color: blue;
 }
 
-@media screen and (max-width:1199px){
+#gotoTop{
+  position: fixed;
+  bottom: 15px;
+  right:15px;
+}
+
+#gotoTop button{
+  background-color: white;
+  min-height: 40px;
+}
+
+#gotoTop p{
+  margin-bottom:-30px;
+  transition: all 0.8s;
+}
+
+#rocket{
+  transition: transform 0.5s, margin-top 1.4s;
+}
+
+#gotoTop button:hover #rocket{
+  transform : rotate(-45deg)!important;
+}
+
+#gotoTop:hover p{
+  margin-left: -90px;
+}
+
+@media screen and (max-width:1199.5px){
 
   .topthree{
     border:none;
@@ -395,9 +448,20 @@ button{
     margin: 10px 10px;
   }
 
+  #gotoTop{
+    position: absolute;
+    bottom: -30px;
+    right:-24px;
+    transform: translateX(-50%);
+  }
+
+  #gotoTop p{
+    margin-left: -90px;
+  }
+
 }
 
-@media screen and (max-width:991px){
+@media screen and (max-width:991.5px){
 
   #phoneList{
     display: inline-block;
@@ -440,4 +504,26 @@ button{
     padding: 5px;
   }
 
+  #navbar Button{
+    width:200px;
+  }
+
+  #navbar #phoneList,#navbar #colorPicker Button, #navbar Button:nth-of-type(2){
+    width:unset;
+  }
+
+  .iconbtn{
+    font-size: 1rem;
+  }
 }
+
+@media screen and (max-width:575px){
+  #blogtitle button{
+    width:170px;
+  }
+
+  #searchResult{
+    padding: 0 10px;
+  }
+}
+

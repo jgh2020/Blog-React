@@ -417,23 +417,27 @@ button{
 #gotoTop button{
   background-color: white;
   min-height: 40px;
-}
-
-#gotoTop p{
-  margin-bottom:-30px;
-  transition: all 0.8s;
+  display: inline-flex;
+  
 }
 
 #rocket{
   transition: transform 0.5s, margin-top 1.4s;
 }
 
+#topLetter{
+  padding-right: 3px;
+  font-size: 0%;
+  transition: all 0.5s;
+}
+
 #gotoTop button:hover #rocket{
   transform : rotate(-45deg)!important;
 }
 
-#gotoTop:hover p{
-  margin-left: -90px;
+#gotoTop button:hover #topLetter{
+  font-size: 1rem;
+  color:gray;
 }
 
 @media screen and (max-width:1199.5px){
@@ -451,12 +455,13 @@ button{
   #gotoTop{
     position: absolute;
     bottom: -30px;
-    right:-24px;
+    right:-39px;
     transform: translateX(-50%);
   }
 
-  #gotoTop p{
-    margin-left: -90px;
+  #topLetter {
+    font-size: 1rem;
+    color:black;
   }
 
 }

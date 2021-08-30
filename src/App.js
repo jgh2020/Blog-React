@@ -344,7 +344,7 @@ function App() {
                 </Tab>
               </Tabs>
             </div>
-            <div id="gotoTop"><p>Top</p>
+            <div id="gotoTop">
               <Button variant="outline-secondary" onClick={()=>{
                   window.scrollTo(0,0)
                   let rocket = document.getElementById('rocket');
@@ -360,7 +360,7 @@ function App() {
                   setTimeout(() => {
                     rocket.style.visibility = "unset";
                   }, 2600);
-                }}><div id="rocket">🚀</div></Button><br/>
+                }}><div id="topLetter">Top</div><div id="rocket">🚀</div></Button>
             </div>
             
           </Col>  {/* topthree */} 
